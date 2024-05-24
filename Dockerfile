@@ -13,26 +13,27 @@ RUN apt-get update \
 # Create a non-root user
 RUN useradd --create-home appuser \
     && echo "appuser ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/appuser \
-    && chmod 0440 /etc/sudoers.d/appuser
+    && chmod 0440 /etc/sudoers.d/appuser \
+    && mkdir /home/appuser/app/ \
+    && chmod -R 755 /home/appuser/app/
+
+# Switch to the non-root user
 USER appuser
 
 # Set up work directory
-WORKDIR /home/appuser/app
+WORKDIR /home/appuser/app/
 
 # Install pipx
-RUN python3 -m pip install --upgrade pip \
-    && python3 -m pip install --user pipx \
-    && python3 -m pipx ensurepath
+RUN python -m pip install --upgrade pip \
+    && python -m pip install --user pipx \
+    && python -m pipx ensurepath
 
 # Clone the repository and install its dependencies
-RUN git clone https://github.com/danielmiessler/fabric.git \
-    && python3 -m pipx install ./fabric
+COPY . /home/appuser/app/fabric/
+RUN python -m pipx install ./fabric
 
-# Set file permissions
-RUN chmod -R 755 /home/appuser/app
-
-# Use a least privileged user
-USER appuser
+# Set file permissions for the app directory
+# RUN sudo chmod -R 755 /home/appuser/app
 
 # Set the entrypoint
 ENTRYPOINT ["/usr/bin/bash"]
