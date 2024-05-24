@@ -6,6 +6,9 @@ RUN apt-get update \
         git \
         build-essential \
         ffmpeg \
+        curl \
+        wget \
+        nano \
         sudo \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
@@ -31,9 +34,6 @@ RUN python -m pip install --upgrade pip \
 # Clone the repository and install its dependencies
 COPY . /home/appuser/app/fabric/
 RUN python -m pipx install ./fabric
-
-# Set file permissions for the app directory
-# RUN sudo chmod -R 755 /home/appuser/app
 
 # Set the entrypoint
 ENTRYPOINT ["/usr/bin/bash"]
