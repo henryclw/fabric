@@ -68,10 +68,12 @@ class Standalone:
         if host:
             response = await AsyncClient(host=host).chat(model=self.model, messages=messages,
                                                          options=Options(temperature=self.args.temp,
-                                                                         top_p=self.args.top_p))
+                                                                         top_p=self.args.top_p, num_ctx=8192),
+                                                         keep_alive=-1)
         else:
             response = await AsyncClient().chat(model=self.model, messages=messages,
-                                                options=Options(temperature=self.args.temp, top_p=self.args.top_p))
+                                                options=Options(temperature=self.args.temp, top_p=self.args.top_p,
+                                                                num_ctx=8192), keep_alive=-1)
         print(response['message']['content'])
         copy = self.args.copy
         if copy:
@@ -84,16 +86,17 @@ class Standalone:
         from ollama import AsyncClient, Options
         buffer = ""
         if host:
-            # local ollama with stream and spec host
             async for part in await AsyncClient(host=host).chat(model=self.model, messages=messages, stream=True,
                                                                 options=Options(temperature=self.args.temp,
-                                                                                top_p=self.args.top_p)):
+                                                                                top_p=self.args.top_p, num_ctx=8192),
+                                                                keep_alive=-1):
                 buffer += part['message']['content']
                 print(part['message']['content'], end='', flush=True)
         else:
             async for part in await AsyncClient().chat(model=self.model, messages=messages, stream=True,
                                                        options=Options(temperature=self.args.temp,
-                                                                       top_p=self.args.top_p)):
+                                                                       top_p=self.args.top_p, num_ctx=8192),
+                                                       keep_alive=-1):
                 buffer += part['message']['content']
                 print(part['message']['content'], end='', flush=True)
         if self.args.output:
