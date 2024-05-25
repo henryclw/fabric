@@ -35,5 +35,9 @@ RUN python -m pip install --upgrade pip \
 COPY . /home/appuser/app/fabric/
 RUN python -m pipx install ./fabric
 
+# Same as `fabric --setup`
+RUN mkdir -p /home/appuser/.config/fabric/patterns && echo "#No API key set" > /home/appuser/.config/fabric/.env
+RUN cp -r /home/appuser/app/fabric/patterns /home/appuser/.config/fabric/
+
 # Set the entrypoint
 ENTRYPOINT ["/usr/bin/bash"]
